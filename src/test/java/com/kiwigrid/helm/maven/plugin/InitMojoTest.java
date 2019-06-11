@@ -26,7 +26,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 
 @ExtendWith({ SystemPropertyExtension.class, MojoExtension.class })
-@MojoProperty(name = "helmDownloadUrl", value = "https://kubernetes-helm.storage.googleapis.com/helm-v2.9.1-linux-amd64.tar.gz")
+@MojoProperty(name = "helmDownloadUrl", value = "https://get.helm.sh/helm-v2.14.1-linux-amd64.tar.gz")
 @MojoProperty(name = "chartDirectory", value = "junit-helm")
 @MojoProperty(name = "chartVersion", value = "0.0.1")
 public class InitMojoTest {
@@ -41,7 +41,7 @@ public class InitMojoTest {
 		// getHelmExecuteablePath is system-depending and has to be mocked for that reason
 		// as SystemUtils.IS_OS_WINDOWS will always return false on a *NIX system
 		doReturn(Paths.get("dummy/path/to/helm").toAbsolutePath()).when(mojo).getHelmExecuteablePath();
-		mojo.setHelmDownloadUrl("https://kubernetes-helm.storage.googleapis.com/helm-v2.14.1-" + os + "-amd64.tar.gz");
+		mojo.setHelmDownloadUrl("https://get.helm.sh/helm-v2.14.1-" + os + "-amd64.tar.gz");
 
 		// run init
 		mojo.execute();
@@ -58,7 +58,7 @@ public class InitMojoTest {
 		// prepare execution
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
 		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString(), anyBoolean());
-		mojo.setHelmDownloadUrl("https://kubernetes-helm.storage.googleapis.com/helm-v2.9.1-linux-amd64.tar.gz");
+		mojo.setHelmDownloadUrl("https://get.helm.sh/helm-v2.14.1-linux-amd64.tar.gz");
 
 		// run init
 		mojo.execute();
@@ -79,7 +79,7 @@ public class InitMojoTest {
 		// prepare execution
 		ArgumentCaptor<String> helmCommandCaptor = ArgumentCaptor.forClass(String.class);
 		doNothing().when(mojo).callCli(helmCommandCaptor.capture(), anyString(), anyBoolean());
-		mojo.setHelmDownloadUrl("https://kubernetes-helm.storage.googleapis.com/helm-v2.9.1-linux-amd64.tar.gz");
+		mojo.setHelmDownloadUrl("https://get.helm.sh/helm-v2.14.1-linux-amd64.tar.gz");
 		mojo.setSkipRefresh(true);
 
 		// run init
