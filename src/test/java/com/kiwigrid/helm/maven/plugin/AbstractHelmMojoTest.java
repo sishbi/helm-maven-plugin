@@ -55,6 +55,14 @@ class AbstractHelmMojoTest {
         assertTrue(chartDirectories.containsAll(expected), "Charts dirs: " + chartDirectories + ", should contain all expected dirs: " + expected);
     }
 
+    @Test
+    void getChartDirectoriesReturnChartDirectoriesWithoutLibraries() throws MojoExecutionException {
+
+        List<String> chartDirectories = subjectSpy.getChartDirectories(chartDir, false);
+        List<String> expected = asList(chartDir, excludeDir1);
+
+        assertTrue(chartDirectories.containsAll(expected), "Charts dirs: " + chartDirectories + ", should contain all expected dirs: " + expected);
+    }
 
     @Test
     void getChartDirectoriesReturnChartDirectoriesWithPlainExclusion() throws MojoExecutionException {

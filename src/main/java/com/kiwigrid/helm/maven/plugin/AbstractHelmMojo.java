@@ -188,6 +188,10 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 	}
 
 	List<String> getChartDirectories(String path) throws MojoExecutionException {
+		return getChartDirectories(path, true);
+	}
+
+	List<String> getChartDirectories(String path, boolean includeLibraryCharts) throws MojoExecutionException {
 		List<String> exclusions = new ArrayList<>();
 
 		if (getExcludes() != null) {
@@ -200,6 +204,7 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 
 		try (Stream<Path> files = Files.walk(Paths.get(path), FileVisitOption.FOLLOW_LINKS)) {
 			List<String> chartDirs = files.filter(p -> p.getFileName().toString().equalsIgnoreCase("chart.yaml"))
+					.filter(p -> includeLibraryCharts || isNotLibraryChart(p))
 					.map(p -> p.getParent().toString())
 					.filter(shouldIncludeDirectory(exclusionPatterns))
 					.collect(Collectors.toList());
@@ -212,6 +217,20 @@ public abstract class AbstractHelmMojo extends AbstractMojo {
 		} catch (IOException e) {
 			throw new MojoExecutionException("Unable to scan chart directory at " + path, e);
 		}
+	}
+
+	private boolean isNotLibraryChart(Path chart)
+	{
+		boolean includeLibrary = true;
+		try {
+			includeLibrary = Files.readAllLines(chart).stream().noneMatch(s -> s.matches("(?i)type\\s*:\\s*library"));
+		} catch (IOException e) {
+			getLog().debug("Failed to read " + chart);
+		}
+		if (!includeLibrary) {
+			getLog().debug("Skip library chart " + chart);
+		}
+		return includeLibrary;
 	}
 
 	private Predicate<String> shouldIncludeDirectory(MatchPatterns exclusionPatterns) {
